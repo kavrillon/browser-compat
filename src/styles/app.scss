@@ -1,10 +1,32 @@
 @import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap';
 
+/*
+Checked items:
+- nth-child
+- flex
+- opacity
+- rgba
+- calc
+- rem
+- transition
+- animations
+
+TOOLS:
+https://github.com/postcss/autoprefixer
+https://github.com/postcss/postcss
+https://github.com/jonathantneal/flexibility
+https://github.com/7rulnik/postcss-flexibility
+
+TODO:
+- media queries
+*/
+
 body {
     background: #ddd;
     text-align: center;
     font-family: Roboto, Arial, sans-serif;
     font-weight: 200;
+    transition: all 400ms;
 
     h1 {
         margin: 0 0 15px;
@@ -27,13 +49,27 @@ body {
         background: #aaaaee;
         color: #fff;
 
-        &:nth-child(2) {
+        &:nth-child(3) {
             flex: 3;
             background: #ff5555;
         }
 
-        &:last-child {
+        &:first-child {
             opacity: .5;
         }
     }
+}
+
+.anim {
+    height: 20px;
+    margin: 2rem auto;
+    width: calc(100% - 40px);
+    background-color: rgba(255, 0, 0, .5);
+    animation-name: example;
+    animation-duration: 4s;
+}
+
+@keyframes example {
+    from {background-color: rgba(255, 0, 0, .5);}
+    to {background-color: rgba(0, 255, 0, .5);}
 }

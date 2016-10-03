@@ -29,7 +29,7 @@ module.exports = function (grunt) {
             },
             css: {
                 files: ['<%= dirs.styles %>/**/*.scss'],
-                tasks: ['preprocss']
+                tasks: ['sass:dev']
             }
         },
         connect: {
@@ -55,7 +55,7 @@ module.exports = function (grunt) {
                     lineNumber: true
                 },
                 files: {
-                    '<%= dirs.temp %>/app.css': '<%= dirs.styles %>/app.scss'
+                    '<%= dirs.temp %>/css/app.css': '<%= dirs.styles %>/app.scss'
                 }
             },
             build: {
@@ -63,23 +63,34 @@ module.exports = function (grunt) {
                     style: 'compressed'
                 },
                 files: {
-                    '<%= dirs.dist %>/app.css': '<%= dirs.styles %>/app.scss'
+                    '<%= dirs.temp %>/css/app.css': '<%= dirs.styles %>/app.scss'
                 }
             }
         },
-        autoprefixer: {
-            dev: {
-                options: ['last 2 versions', 'ie 8', 'ie 9'],
-                '<%= dirs.temp %>/app.css': ['<%= dirs.temp %>/app.css']
+        postcss: {
+            options: {
+                processors: [
+                    require('oldie'),
+                    require('postcss-flexibility')
+                ]
             },
-            build: {
-                options: ['last 2 versions', 'ie 8', 'ie 9'],
-                '<%= dirs.dist %>/app.css': ['<%= dirs.dist %>/app.css']
+            dist: {
+                src: '<%= dirs.temp %>/css/app.css',
+                dest: '<%= dirs.temp %>/css/app.oldie.css'
+            }
+        },
+        autoprefixer: {
+            options: {
+                browsers: ['last 2 versions', 'ie 8', 'ie 9', 'android >= 3']
+            },
+            dist: {
+                src: '<%= dirs.temp %>/css/app.css',
+                dest: '<%= dirs.temp %>/css/app.css'
             }
         },
         scsslint: {
             allFiles: [
-                '<%= dirs.app %>/**/*.scss'
+                '<%= dirs.app %>/styles/**/*.scss'
             ],
             options: {
                 config: '.scss-lint.yml',
@@ -124,6 +135,14 @@ module.exports = function (grunt) {
                     src: '**/*.js',
                     dest: '<%= dirs.dist %>/js'
                 }]
+            },
+            css: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= dirs.temp %>',
+                    src: '**/*.css',
+                    dest: '<%= dirs.dist %>'
+                }]
             }
         },
         'gh-pages': {
@@ -136,11 +155,6 @@ module.exports = function (grunt) {
 
     grunt.registerTask('default', 'serve');
 
-    grunt.registerTask('preprocss', [
-        'sass:dev',
-        'autoprefixer:dev'
-    ]);
-
     grunt.registerTask('lint', [
         'scsslint',
         'jshint'
@@ -148,16 +162,19 @@ module.exports = function (grunt) {
 
     grunt.registerTask('serve', [
         'clean',
-        'preprocss',
+        'sass:dev',
+        'autoprefixer',
+        'postcss',
         'connect:livereload',
         'watch'
     ]);
 
     grunt.registerTask('build', [
         'clean',
-        'lint',
+        //'lint',
         'sass:build',
-        'autoprefixer:build',
+        'autoprefixer',
+        'postcss',
         'copy'
     ]);
 
