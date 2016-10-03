@@ -1,3 +1,3 @@
 $(document).ready(function() {
-    $('.flex > div:nth-child(2)').text('JQUERY 3 OK');
+    $('.flex > div:nth-child(3)').text('JQUERY 3 OK');
 });
